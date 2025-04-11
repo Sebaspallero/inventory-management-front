@@ -4,7 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import App from "@/App";
 import Dashboard from "@/pages/Dashboard";
-import Login from "@/pages/Login";
+import AuthScreens from "@/pages/AuthScreens";
 import NotFound from "@/pages/NotFound";
 
 
@@ -14,7 +14,7 @@ export const AppRouter = createBrowserRouter([
     element: <App />,
     errorElement: <NotFound />, 
     children: [
-      {path: "/", element: React.createElement(Login)},
+      {path: "/", element: React.createElement(AuthScreens)},
       {path: "/dashboard", element: React.createElement(Dashboard)}
     ],
   },
