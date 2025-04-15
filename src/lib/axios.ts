@@ -7,12 +7,21 @@ const API = axios.create({
   baseURL: baseUrl,
 });
 
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+API.interceptors.response.use(
+  response => response,
+  error => {
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.message?.includes("expired")
+    ) {
+      console.warn("Token expirado, cerrando sesión automáticamente");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("username");
+      localStorage.removeItem("role");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export default API;

@@ -3,17 +3,34 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { TabsContent } from '@/components/ui/tabs';
+import { register } from '@/services/authService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserRole, ROLE_LABELS } from '@/utils/Roles';
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
 
 
 const registerSchema = z.object({
-    firstName: z.string().min(1, 'El nombre es requerido'),
-    lastName: z.string().min(1, 'El apellido es requerido'),
+    username: z.string().min(1, 'Nombre de usuario requerido'),
     email: z.string().email('Correo electrónico inválido'),
     password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
     role: z.string().min(1, 'Seleccione un rol'),
@@ -25,18 +42,13 @@ const registerSchema = z.object({
 type FormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
-
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
 
-    const {
-        register: registerSignup,
-        handleSubmit: handleSubmitSignup,
-        formState: { errors: errorsSignup, isSubmitting: isSubmittingSignup }
-    } = useForm({
+    const form = useForm<FormData>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
-            role: 'employee',
             terms: false
         }
     });
@@ -47,17 +59,14 @@ const Register = () => {
 
     const onRegisterSubmit = async (data: FormData) => {
         try {
-            // Aquí irá la lógica para registrar al usuario
-            console.log('Register data:', data);
+            const { terms, ...dataWithoutTerms } = data;
+            const { token, username, role } = await register(dataWithoutTerms);
 
-            // Simular una petición de registro
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            localStorage.setItem("accessToken", token);
+            localStorage.setItem("username", username);
+            localStorage.setItem("role", role);
 
-            // Si hay un error de registro, establecemos el mensaje de error
-            // setErrorMessage('El correo ya está registrado');
-
-            // Si no hay errores, redirigir al login o al dashboard
-            // window.location.href = '/dashboard';
+            navigate("/dashboard");
         } catch (error: any) {
             setErrorMessage('Error al registrarse: ' + error.message);
         }
@@ -65,115 +74,133 @@ const Register = () => {
 
     return (
         <TabsContent value="register" className="mt-0 space-y-4">
-            <form onSubmit={handleSubmitSignup(onRegisterSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="firstName">Nombre</Label>
-                        <Input
-                            id="firstName"
-                            placeholder="Juan"
-                            {...registerSignup("firstName")}
-                        />
-                        {errorsSignup.firstName && (
-                            <p className="text-red-500 text-sm">{errorsSignup.firstName.message}</p>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onRegisterSubmit)} className="space-y-4">
+
+                    <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Nombre de Usuario</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Juan" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="lastName">Apellido</Label>
-                        <Input
-                            id="lastName"
-                            placeholder="Pérez"
-                            {...registerSignup("lastName")}
-                        />
-                        {errorsSignup.lastName && (
-                            <p className="text-red-500 text-sm">{errorsSignup.lastName.message}</p>
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Correo Electrónico</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                        <Input
+                                            placeholder="nombre@empresa.com"
+                                            className="pl-10"
+                                            {...field}
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )}
-                    </div>
-                </div>
+                    />
 
-                <div className="space-y-2">
-                    <Label htmlFor="email-register">Correo Electrónico</Label>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                            id="email-register"
-                            placeholder="nombre@empresa.com"
-                            className="pl-10"
-                            {...registerSignup("email")}
-                        />
-                    </div>
-                    {errorsSignup.email && (
-                        <p className="text-red-500 text-sm">{errorsSignup.email.message}</p>
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Contraseña</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                        <Input
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="••••••••"
+                                            className="pl-10"
+                                            {...field}
+                                        />
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            type="button"
+                                            onClick={togglePasswordVisibility}
+                                            className="absolute right-1 top-1 h-8 w-8"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4 text-gray-400" />
+                                            ) : (
+                                                <Eye className="h-4 w-4 text-gray-400" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="role"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Rol de Usuario</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar rol" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value={UserRole.EMPLOYEE}>{ROLE_LABELS.EMPLOYEE}</SelectItem>
+                                        <SelectItem value={UserRole.ADMIN}>{ROLE_LABELS.ADMIN}</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="terms"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="terms"
+                                        checked={field.value}
+                                        onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                                    />
+                                    <FormLabel htmlFor="terms" className="text-sm">
+                                        Acepto los <a href="#" className="text-blue-600 hover:text-blue-500 dark:text-blue-400">términos y condiciones</a>
+                                    </FormLabel>
+                                </div>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {errorMessage && (
+                        <p className="text-red-500 text-sm text-center">{errorMessage}</p>
                     )}
-                </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="password-register">Contraseña</Label>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                            id="password-register"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="••••••••"
-                            className="pl-10"
-                            {...registerSignup("password")}
-                        />
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            type="button"
-                            onClick={togglePasswordVisibility}
-                            className="absolute right-1 top-1 h-8 w-8"
-                        >
-                            {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-gray-400" />
-                            ) : (
-                                <Eye className="h-4 w-4 text-gray-400" />
-                            )}
-                        </Button>
-                    </div>
-                    {errorsSignup.password && (
-                        <p className="text-red-500 text-sm">{errorsSignup.password.message}</p>
-                    )}
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="role">Rol de Usuario</Label>
-                    <Select defaultValue="employee" {...registerSignup("role")}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Seleccionar rol" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="employee">Empleado</SelectItem>
-                            <SelectItem value="admin">Administrador</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {errorsSignup.role && (
-                        <p className="text-red-500 text-sm">{errorsSignup.role.message}</p>
-                    )}
-                </div>
-
-                <div className="flex items-center space-x-2">
-                    <Checkbox id="terms" {...registerSignup("terms")} />
-                    <Label htmlFor="terms" className="text-sm">
-                        Acepto los <a href="#" className="text-blue-600 hover:text-blue-500 dark:text-blue-400">términos y condiciones</a>
-                    </Label>
-                </div>
-                {errorsSignup.terms && (
-                    <p className="text-red-500 text-sm">{errorsSignup.terms.message}</p>
-                )}
-
-                {errorMessage && (
-                    <p className="text-red-500 text-sm text-center">{errorMessage}</p>
-                )}
-
-                <Button type="submit" className="w-full" disabled={isSubmittingSignup}>
-                    {isSubmittingSignup ? "Registrando..." : "Crear Cuenta"}
-                    {!isSubmittingSignup && <ArrowRight className="ml-2 h-4 w-4" />}
-                </Button>
-            </form>
+                    <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                        {form.formState.isSubmitting ? "Registrando..." : "Crear Cuenta"}
+                        {!form.formState.isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+                    </Button>
+                </form>
+            </Form>
         </TabsContent>
-    )
-}
+    );
+};
 
-export default Register
+export default Register;
