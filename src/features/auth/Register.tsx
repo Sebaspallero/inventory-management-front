@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { UserRole, ROLE_LABELS } from '@/utils/Roles';
+import { UserRole, ROLE_LABELS } from '@/utils/roles';
 
 import {
     Select,
