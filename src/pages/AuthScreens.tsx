@@ -2,8 +2,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lock } from 'lucide-react';
-import Login from '@/features/Login';
-import Register from '@/features/Register';
+import Login from '@/features/auth/Login';
+import Register from '@/features/auth/Register';
 
 const AuthScreens = () => {
 
