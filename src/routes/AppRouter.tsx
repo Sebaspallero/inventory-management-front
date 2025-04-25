@@ -11,6 +11,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Products from "@/pages/Products";
 import DashboardLayout from "@/pages/DashboardLayout";
 import Suppliers from "@/pages/Suppliers";
+import Categories from "@/pages/Categories";
+import Users from "@/pages/Users";
 
 
 
@@ -30,6 +32,8 @@ export const AppRouter = createBrowserRouter([
               { path: "/dashboard", element: <Dashboard /> },
               { path: "/products", element: <Products /> },
               { path: "/suppliers", element: <Suppliers /> },
+              {path: "/categories", element: <Categories />},
+              {path: "/users", element: <Users />},
             ]
           }
         ]

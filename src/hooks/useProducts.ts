@@ -1,31 +1,11 @@
-import { useQuery, keepPreviousData  } from "@tanstack/react-query";
+import { useQuery, keepPreviousData, useMutation, useQueryClient  } from "@tanstack/react-query";
 
-import { getAllProducts, getAllPaginatedProducts } from "@/services/productsService";
-
-
-interface Product {
-    id: number,
-    name: string,
-    description: string,
-    stock: number,
-    price: number,
-    categoryName: string,
-    supplierName: string,
-    createdAt: string,
-    updatedAt: string
-}
-
-interface PagedResponse<T> {
-  content: T[];
-  pageNumber: number;
-  pageSize: number;
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-}
+import { getAllProducts, getAllPaginatedProducts, saveProduct, deleteProduct, updateProduct, exportProductsToExcel, searchProductsByName  } from "@/services/productsService";
+import { IPagedResponse } from "@/types/IPagedResponse";
+import { IProductResponse, IProductRequest } from "@/types/IProduct";
 
 export const useProducts = () => {
-  return useQuery<Product[]>({
+  return useQuery<IProductResponse[]>({
     queryKey: ["products"],
     queryFn: () => getAllProducts(),
     refetchOnWindowFocus: false,
@@ -33,12 +13,65 @@ export const useProducts = () => {
   });
 }
 
-export const usePaginatedProducts = (page: number, size: number, category: number | null) => {
-  return useQuery<PagedResponse<Product>>({
-    queryKey: ["products", page, size, category],
-    queryFn: () => getAllPaginatedProducts(page, size, category),
+export const useFilteredProducts = (page: number, size: number, category: number | null, search: string) => {
+  const trimmedSearch = search.trim();
+  const shouldSearch = trimmedSearch.length > 2;
+
+  const queryKey = ['products', { page, size, category, search: trimmedSearch }];
+
+  const queryFn = () => {
+    if (shouldSearch) {
+      return searchProductsByName(trimmedSearch, page, size);
+    }
+    return getAllPaginatedProducts(page, size, category);
+  };
+
+  return useQuery<IPagedResponse<IProductResponse>>({
+    queryKey,
+    queryFn,
     refetchOnWindowFocus: false,
     refetchInterval: 60000,
     placeholderData: keepPreviousData,
+    staleTime: 300000,
+  });
+};
+
+
+export const useSaveProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newProduct: IProductRequest) => saveProduct(newProduct),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+export const useUpdateProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, product }: { id: number; product: IProductRequest }) => updateProduct(id, product),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+};
+
+export const useDeleteProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => deleteProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+export const useExportProducts = () => {
+  return useMutation({
+    mutationFn: exportProductsToExcel,
   });
 };

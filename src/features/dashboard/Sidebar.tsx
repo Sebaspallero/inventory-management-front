@@ -45,15 +45,21 @@ const Sidebar = () => {
                         <ShoppingCart className="mr-2 h-4 w-4" />
                         Órdenes
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start p-3 mb-1">
+                    <NavLink
+                        to="/categories"
+                        className={({ isActive }) => `w-full justify-start p-2 mb-1 flex items-center rounded-md ${isActive ? "bg-accent" : "hover:bg-accent hover:text-accent-foreground"}`}
+                    >
                         <Grid className="mr-2 h-4 w-4" />
-                        Categorías
-                    </Button>
+                        <span className="font-medium text-sm">Categorías</span>
+                    </NavLink>
                     {role === '[ROLE_ADMIN]' && (
-                        <Button variant="ghost" className="w-full justify-start p-3 mb-1">
+                        <NavLink
+                            to="/users"
+                            className={({ isActive }) => `w-full justify-start p-2 mb-1 flex items-center rounded-md ${isActive ? "bg-accent" : "hover:bg-accent hover:text-accent-foreground"}`}
+                        >
                             <Users className="mr-2 h-4 w-4" />
-                            Empleados
-                        </Button>
+                            <span className="font-medium text-sm">Empleados</span>
+                        </NavLink>
                     )}
                 </nav>
             </div>

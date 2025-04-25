@@ -1,18 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-
 import { getAllCategories } from "@/services/categoryService";
-
-
-interface Category {
-    id: number,
-    name: string,
-    createdAt: string,
-    updatedAt: string
-}
+import { ICategory } from "@/types/ICategory";
 
 
 export const useCategories = () => {
-    return useQuery<Category[]>({
+    return useQuery<ICategory[]>({
         queryKey: ["categories"],
         queryFn: () => getAllCategories(),
         refetchOnWindowFocus: false,
