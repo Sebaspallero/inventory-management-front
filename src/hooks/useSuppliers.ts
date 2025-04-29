@@ -1,12 +1,12 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deleteSupplier, exportSuppliersToExcel, getAllSuppliers, saveSupplier, updateSupplier, searchSupplierByName } from "@/services/supplierService";
+import { deleteSupplier, exportSuppliersToExcel, getAllPaginatedSuppliers, getAllSuppliers, saveSupplier, updateSupplier, searchSupplierByName } from "@/services/supplierService";
 import { IPagedResponse } from "@/types/IPagedResponse";
-import { ISupplier, ISupplierRequest, ISupplierResponse } from "@/types/ISupplier";
+import { ISupplierRequest, ISupplierResponse } from "@/types/ISupplier";
 
-export const useSuppliers = (page: number, size: number) => {
-    return useQuery<IPagedResponse<ISupplier>>({
-        queryKey: ["suppliers", page, size],
-        queryFn: () => getAllSuppliers(page, size),
+export const useSuppliers = () => {
+    return useQuery<ISupplierResponse[]>({
+        queryKey: ["suppliers"],
+        queryFn: () => getAllSuppliers(),
         refetchOnWindowFocus: false,
         refetchInterval: 60000,
         placeholderData: keepPreviousData,
@@ -23,7 +23,7 @@ export const useFilteredSuppliers = (page: number, size: number, search: string)
     if (shouldSearch) {
       return searchSupplierByName(trimmedSearch, page, size);
     }
-    return getAllSuppliers(page, size);
+    return getAllPaginatedSuppliers(page, size);
   };
 
   return useQuery<IPagedResponse<ISupplierResponse>>({

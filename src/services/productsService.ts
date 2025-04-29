@@ -16,6 +16,11 @@ export const getAllPaginatedProducts = async (page: number, size: number, catego
     }
 }
 
+export const getProductsBySupplier = async (supplierId: number) => {
+    const response = await API.get(`/products/supplier/${supplierId}`)
+    return response.data;
+}
+
 export const saveProduct = async (product: IProductRequest) => {
     const response = await API.post("/products", product);
     return response.data;

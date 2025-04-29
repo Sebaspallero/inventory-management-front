@@ -1,20 +1,12 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { useAllProducts } from '@/hooks/useDashboard';
+import { useOrdersPerMonth } from '@/hooks/useOrders';
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, BarChart, Bar } from 'recharts'
-
-const stockData = [
-    { name: 'Ene', valor: 4000 },
-    { name: 'Feb', valor: 3000 },
-    { name: 'Mar', valor: 2000 },
-    { name: 'Abr', valor: 2780 },
-    { name: 'May', valor: 1890 },
-    { name: 'Jun', valor: 2390 },
-    { name: 'Jul', valor: 3490 },
-];
 
 const ChartStats = () => {
 
     const { data: allProducts } = useAllProducts();
+    const { data: monthlyOrders} = useOrdersPerMonth()
 
     const categoryDistribution = allProducts?.map(({ stock, categoryName }: { stock: number; categoryName: string }) => {
         return { category: categoryName, cantidad: stock };
@@ -27,15 +19,15 @@ const ChartStats = () => {
                     <CardTitle>Nivel de Inventario</CardTitle>
                     <CardDescription>Análisis mensual del stock</CardDescription>
                 </CardHeader>
-                <CardContent className="h-80">
+                <CardContent className="h-80 to-blue-300">
                     <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={stockData}>
+                        <LineChart data={monthlyOrders}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip formatter={(value) => [`${value}`, 'Cantidad']} />
                             <Legend />
-                            <Line type="monotone" dataKey="valor" stroke="#3b82f6" strokeWidth={2} />
+                            <Line type="monotone" dataKey="value" name='Cantidad' stroke="#3b82f6" strokeWidth={2} />
                         </LineChart>
                     </ResponsiveContainer>
                 </CardContent>
@@ -53,7 +45,7 @@ const ChartStats = () => {
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar dataKey="cantidad" fill="#8884d8" />
+                            <Bar dataKey="cantidad" name={"Cantidad"} fill="#8B5CF6" />
                         </BarChart>
                     </ResponsiveContainer>
                 </CardContent>

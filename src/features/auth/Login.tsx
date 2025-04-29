@@ -8,7 +8,6 @@ import { TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 const loginSchema = z.object({
@@ -38,11 +37,13 @@ const Login = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const { token, username, role } = await login(data);
+      const { token, email, role, name, lastName } = await login(data);
 
       localStorage.setItem("accessToken", token);
-      localStorage.setItem("username", username);
+      localStorage.setItem("email", email);
       localStorage.setItem("role", role);
+      localStorage.setItem("userName", name);
+      localStorage.setItem("userLastName", lastName);
 
       navigate("/dashboard");
     } catch (error: any) {
@@ -52,8 +53,8 @@ const Login = () => {
   };
 
   return (
-    <TabsContent value="login" className="mt-0 space-y-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <TabsContent value="login">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="email">Correo Electrónico</Label>
           <div className="relative">
@@ -103,11 +104,6 @@ const Login = () => {
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox id="remember" />
-          <Label htmlFor="remember" className="text-sm">Recordar sesión por 30 días</Label>
         </div>
 
         {errorMessage && (

@@ -1,10 +1,16 @@
 import API from "@/lib/axios";
 import { ISupplierRequest } from "@/types/ISupplier";
 
-export const getAllSuppliers = async (page: number, size: number) => {
-    const response = await API.get(`/suppliers?page=${page}&size=${size}`)
+export const getAllPaginatedSuppliers = async (page: number, size: number) => {
+    const response = await API.get(`/suppliers/paginated?page=${page}&size=${size}`)
     return response.data;
 }
+
+export const getAllSuppliers = async () => {
+    const response = await API.get("/suppliers");
+    return response.data;
+}
+
 
 export const saveSupplier = async (supplier: ISupplierRequest) => {
     const response = await API.post("/suppliers", supplier);

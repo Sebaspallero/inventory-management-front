@@ -15,6 +15,7 @@ import AddProductDialog from '@/features/products/AddProductDialog';
 import DeleteProductDialog from '@/features/products/DeleteProductDialog';
 import UpdateProductDialog from '@/features/products/UpdateProductDialog';
 import PaginationController from '@/features/pagination/PaginationController';
+import { Button } from '@/components/ui/button';
 
 const Products = () => {
 
@@ -41,10 +42,10 @@ const Products = () => {
                 </h1>
                 <AddProductDialog
                     trigger={
-                        <div className="cursor-default bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
+                        <Button className='flex-row items-center'>
                             <Plus className="mr-2 h-4 w-4" />
                             Nuevo Producto
-                        </div>
+                        </Button>
                     }
                 />
             </div>

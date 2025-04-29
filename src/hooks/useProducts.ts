@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData, useMutation, useQueryClient  } from "@tanstack/react-query";
 
-import { getAllProducts, getAllPaginatedProducts, saveProduct, deleteProduct, updateProduct, exportProductsToExcel, searchProductsByName  } from "@/services/productsService";
+import { getAllProducts, getAllPaginatedProducts, saveProduct, deleteProduct, updateProduct, exportProductsToExcel, searchProductsByName, getProductsBySupplier  } from "@/services/productsService";
 import { IPagedResponse } from "@/types/IPagedResponse";
 import { IProductResponse, IProductRequest } from "@/types/IProduct";
 
@@ -35,6 +35,19 @@ export const useFilteredProducts = (page: number, size: number, category: number
     staleTime: 300000,
   });
 };
+
+export const useFilteredProductsBySupplier = (supplierId: number | null) => {
+  const query = useQuery<IProductResponse[] | null>({
+    queryKey: ['products', supplierId],
+    queryFn: () => (supplierId ? getProductsBySupplier(supplierId) : Promise.resolve(null)),
+    refetchOnWindowFocus: false,
+    refetchInterval: 60000,
+    enabled: supplierId !== null,
+  });
+
+  return query;
+};
+
 
 
 export const useSaveProduct = () => {

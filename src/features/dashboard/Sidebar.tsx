@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { Grid, Package, ShoppingCart, TrendingUp, Truck, UserCheck, Users } from 'lucide-react'
 import { NavLink } from 'react-router-dom';
 
@@ -41,10 +40,13 @@ const Sidebar = () => {
                         <Truck className="mr-2 h-4 w-4" />
                         <span className="font-medium text-sm">Proveedores</span>
                     </NavLink>
-                    <Button variant="ghost" className="w-full justify-start p-3 mb-1">
+                    <NavLink
+                        to="/orders"
+                        className={({ isActive }) => `w-full justify-start p-2 mb-1 flex items-center rounded-md ${isActive ? "bg-accent" : "hover:bg-accent hover:text-accent-foreground"}`}
+                    >
                         <ShoppingCart className="mr-2 h-4 w-4" />
-                        Órdenes
-                    </Button>
+                        <span className="font-medium text-sm">Órdenes</span>
+                    </NavLink>
                     <NavLink
                         to="/categories"
                         className={({ isActive }) => `w-full justify-start p-2 mb-1 flex items-center rounded-md ${isActive ? "bg-accent" : "hover:bg-accent hover:text-accent-foreground"}`}
@@ -58,7 +60,7 @@ const Sidebar = () => {
                             className={({ isActive }) => `w-full justify-start p-2 mb-1 flex items-center rounded-md ${isActive ? "bg-accent" : "hover:bg-accent hover:text-accent-foreground"}`}
                         >
                             <Users className="mr-2 h-4 w-4" />
-                            <span className="font-medium text-sm">Empleados</span>
+                            <span className="font-medium text-sm">Usuarios</span>
                         </NavLink>
                     )}
                 </nav>

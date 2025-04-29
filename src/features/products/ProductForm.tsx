@@ -25,6 +25,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useSuppliers } from '@/hooks/useSuppliers';
 import { useSaveProduct, useUpdateProduct } from '@/hooks/useProducts';
 import { IProductResponse } from '@/types/IProduct';
+import { DialogFooter } from '@/components/ui/dialog';
 
 const productSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
@@ -45,8 +46,8 @@ type Props = {
 const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
 
     const { data: categories } = useCategories();
-    const { data: suppliers } = useSuppliers(0, 10);
-    const saveProduct = useSaveProduct(); 
+    const { data: suppliers } = useSuppliers();
+    const saveProduct = useSaveProduct();
     const updateProduct = useUpdateProduct();
 
     const form = useForm<ProductFormValues>({
@@ -62,7 +63,7 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
     });
 
     const onSubmitProduct = (data: ProductFormValues) => {
-        if(productToUpdate) {
+        if (productToUpdate) {
             updateProduct.mutate({ id: productToUpdate.id, product: data }, {
                 onSuccess: () => {
                     form.reset();
@@ -73,7 +74,7 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
                     console.error("Error al actualizar el producto:", error);
                 },
             })
-        }else{
+        } else {
             saveProduct.mutate(data, {
                 onSuccess: () => {
                     form.reset();
@@ -89,7 +90,7 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitProduct)} className='grid gap-4'>
+            <form onSubmit={form.handleSubmit(onSubmitProduct)} className="space-y-4 py-2">
                 <FormField
                     control={form.control}
                     name="name"
@@ -103,6 +104,7 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
                         </FormItem>
                     )}
                 />
+
                 <FormField
                     control={form.control}
                     name="description"
@@ -117,104 +119,102 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
                     )}
                 />
 
-                <FormField
-                    control={form.control}
-                    name="categoryId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Categoría</FormLabel>
-                            <Select
-                                onValueChange={(value) => field.onChange(Number(value))}
-                                value={field.value ? String(field.value) : ""}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccionar una categoría" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {categories?.map((category) => (
-                                        <SelectItem key={category.id} value={category.id.toString()}>
-                                            {category.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="categoryId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Categoría</FormLabel>
+                                <Select
+                                    onValueChange={(value) => field.onChange(Number(value))}
+                                    value={field.value ? String(field.value) : ""}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar una categoría" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {categories?.map((category) => (
+                                            <SelectItem key={category.id} value={category.id.toString()}>
+                                                {category.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                <FormField
-                    control={form.control}
-                    name="supplierId"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Proveedor</FormLabel>
-                            <Select
-                                onValueChange={(value) => field.onChange(Number(value))}
-                                value={field.value ? String(field.value) : ""}
-                            >
+                    <FormField
+                        control={form.control}
+                        name="supplierId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Proveedor</FormLabel>
+                                <Select
+                                    onValueChange={(value) => field.onChange(Number(value))}
+                                    value={field.value ? String(field.value) : ""}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccionar un proveedor" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {suppliers?.map((supplier) => (
+                                            <SelectItem key={supplier.id} value={supplier.id.toString()}>
+                                                {supplier.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="price"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Precio</FormLabel>
                                 <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccionar un proveedor" />
-                                    </SelectTrigger>
+                                    <Input type="number" min={1} step="0.01" placeholder="$32.000" {...field} />
                                 </FormControl>
-                                <SelectContent>
-                                    {suppliers?.content.map((supplier) => (
-                                        <SelectItem key={supplier.id} value={supplier.id.toString()}>
-                                            {supplier.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                
-                <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Precio</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="number"
-                                    min={1}
-                                    step="0.01"
-                                    placeholder="$32.000"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="stock"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Stock</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="number"
-                                    min={1}
-                                    placeholder="50"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div className="p-4 border-t flex justify-end gap-2">
-                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="stock"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Stock</FormLabel>
+                                <FormControl>
+                                    <Input type="number" min={1} placeholder="50" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <DialogFooter className="pt-4">
+                    <Button type="button" variant="outline" onClick={onSuccess}>
+                        Cancelar
+                    </Button>
+                    <Button type="submit">
                         Guardar
                     </Button>
-                </div>
+                </DialogFooter>
             </form>
         </Form>
     )

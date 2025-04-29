@@ -20,7 +20,7 @@ const supplierSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
     contactEmail: z.string().min(1, "El email es requerido"),
     phoneNumber: z.string().min(1, "El teléfono es requerido"),
-    
+
 });
 
 type SupplierFormValues = z.infer<typeof supplierSchema>;
@@ -41,12 +41,12 @@ const SupplierForm = ({ onSuccess, supplierToUpdate }: Props) => {
             name: supplierToUpdate?.name || "",
             contactEmail: supplierToUpdate?.contactEmail || "",
             phoneNumber: supplierToUpdate?.phoneNumber || "",
-           
+
         },
     });
 
     const onSubmitProduct = (data: SupplierFormValues) => {
-        if(supplierToUpdate) {
+        if (supplierToUpdate) {
             updateSupplier.mutate({ id: supplierToUpdate.id, supplier: data }, {
                 onSuccess: () => {
                     form.reset();
@@ -57,7 +57,7 @@ const SupplierForm = ({ onSuccess, supplierToUpdate }: Props) => {
                     console.error("Error al actualizar el proveedor:", error);
                 },
             })
-        }else{
+        } else {
             saveSupplier.mutate(data, {
                 onSuccess: () => {
                     form.reset();
@@ -113,9 +113,12 @@ const SupplierForm = ({ onSuccess, supplierToUpdate }: Props) => {
                         </FormItem>
                     )}
                 />
-               
+
                 <div className="p-4 border-t flex justify-end gap-2">
-                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                    <Button type="button" variant="outline" onClick={() => onSuccess()}>
+                        Cancelar
+                    </Button>
+                    <Button type="submit">
                         Guardar
                     </Button>
                 </div>

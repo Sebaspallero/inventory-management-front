@@ -30,7 +30,8 @@ import {
 
 
 const registerSchema = z.object({
-    username: z.string().min(1, 'Nombre de usuario requerido'),
+    name: z.string().min(1, 'Nombre es requerido'),
+    lastName: z.string().min(1, 'Apellido es requerido'),
     email: z.string().email('Correo electrónico inválido'),
     password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
     role: z.string().min(1, 'Seleccione un rol'),
@@ -60,14 +61,17 @@ const Register = () => {
     const onRegisterSubmit = async (data: FormData) => {
         try {
             const { terms, ...dataWithoutTerms } = data;
-            const { token, username, role } = await register(dataWithoutTerms);
+            const { token, email, role, name, lastName } = await register(dataWithoutTerms);
 
             localStorage.setItem("accessToken", token);
-            localStorage.setItem("username", username);
+            localStorage.setItem("email", email);
             localStorage.setItem("role", role);
+            localStorage.setItem("userName", name);
+            localStorage.setItem("userLastName", lastName);
 
             navigate("/dashboard");
         } catch (error: any) {
+            console.error("Registration failed", error);
             setErrorMessage('Error al registrarse: ' + error.message);
         }
     };
@@ -75,16 +79,30 @@ const Register = () => {
     return (
         <TabsContent value="register" className="mt-0 space-y-4">
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                <form onSubmit={form.handleSubmit(onRegisterSubmit)} className="space-y-6">
 
                     <FormField
                         control={form.control}
-                        name="username"
+                        name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Nombre de Usuario</FormLabel>
+                                <FormLabel>Nombre</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Juan" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Apellido</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Valdez" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

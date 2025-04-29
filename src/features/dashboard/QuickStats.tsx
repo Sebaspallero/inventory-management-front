@@ -95,7 +95,7 @@ const QuickStats = () => {
                     )}
                 </CardContent>
             </Card>
-            <Card>
+            <Card onClick={() => navigation("/orders")} className="cursor-pointer">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Órdenes del Mes
@@ -116,7 +116,7 @@ const QuickStats = () => {
                     )}
                 </CardContent>
             </Card>
-            <Card>
+            <Card onClick={() => navigation("/suppliers")} className="cursor-pointer">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Proveedores Activos
