@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ISupplierResponse } from '@/types/ISupplier';
 import { useSaveSupplier, useUpdateSupplier } from "@/hooks/useSuppliers";
+import { toast } from "sonner"
 
 const supplierSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
@@ -50,22 +51,24 @@ const SupplierForm = ({ onSuccess, supplierToUpdate }: Props) => {
             updateSupplier.mutate({ id: supplierToUpdate.id, supplier: data }, {
                 onSuccess: () => {
                     form.reset();
-                    alert("Proveedor actualizado exitosamente");
+                    toast.success("Proveedor actualizado exitosamente");
                     onSuccess();
                 },
                 onError: (error) => {
-                    console.error("Error al actualizar el proveedor:", error);
+                    const message = error?.message || 'Error al actualizar el proveedor';
+                    toast.error(message);
                 },
             })
         } else {
             saveSupplier.mutate(data, {
                 onSuccess: () => {
                     form.reset();
-                    alert("Proveedor guardado exitosamente");
+                    toast.success("Proveedor guardado exitosamente");
                     onSuccess();
                 },
                 onError: (error) => {
-                    console.error("Error al guardar el proveedor:", error);
+                    const message = error?.message || 'Error al guardar el proveedor';
+                    toast.error(message);
                 },
             });
         }

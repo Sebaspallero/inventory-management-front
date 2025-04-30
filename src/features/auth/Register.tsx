@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Eye, EyeOff, Lock, Mail, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UserRole, ROLE_LABELS } from '@/utils/roles';
+import { toast } from 'sonner';
 
 import {
     Select,
@@ -44,7 +45,6 @@ type FormData = z.infer<typeof registerSchema>;
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const form = useForm<FormData>({
@@ -71,8 +71,8 @@ const Register = () => {
 
             navigate("/dashboard");
         } catch (error: any) {
-            console.error("Registration failed", error);
-            setErrorMessage('Error al registrarse: ' + error.message);
+            const message = error?.response?.data?.message || error?.message || 'Error al registrar usuario';
+            toast.error(message);
         }
     };
 
@@ -206,10 +206,6 @@ const Register = () => {
                             </FormItem>
                         )}
                     />
-
-                    {errorMessage && (
-                        <p className="text-red-500 text-sm text-center">{errorMessage}</p>
-                    )}
 
                     <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? "Registrando..." : "Crear Cuenta"}

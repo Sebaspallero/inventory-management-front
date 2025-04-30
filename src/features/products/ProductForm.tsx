@@ -26,6 +26,7 @@ import { useSuppliers } from '@/hooks/useSuppliers';
 import { useSaveProduct, useUpdateProduct } from '@/hooks/useProducts';
 import { IProductResponse } from '@/types/IProduct';
 import { DialogFooter } from '@/components/ui/dialog';
+import { toast } from "sonner"
 
 const productSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
@@ -47,6 +48,7 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
 
     const { data: categories } = useCategories();
     const { data: suppliers } = useSuppliers();
+
     const saveProduct = useSaveProduct();
     const updateProduct = useUpdateProduct();
 
@@ -68,21 +70,24 @@ const ProductForm = ({ onSuccess, productToUpdate }: Props) => {
                 onSuccess: () => {
                     form.reset();
                     alert("Producto actualizado exitosamente");
+                    toast.success('Producto actualizado exitosamente');
                     onSuccess();
                 },
-                onError: (error) => {
-                    console.error("Error al actualizar el producto:", error);
+                onError: (error: any) => {
+                    const message = error?.response?.data?.message || error?.message || 'Error al actualizar el producto';
+                    toast.error(message);
                 },
             })
         } else {
             saveProduct.mutate(data, {
                 onSuccess: () => {
                     form.reset();
-                    alert("Producto guardado exitosamente");
+                    toast.success("Producto guardado exitosamente");
                     onSuccess();
                 },
-                onError: (error) => {
-                    console.error("Error al guardar el producto:", error);
+                onError: (error: any) => {
+                    const message = error?.response?.data?.message || error?.message || 'Error al guardar el producto';
+                    toast.error(message);
                 },
             });
         }

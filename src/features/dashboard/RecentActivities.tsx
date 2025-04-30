@@ -24,7 +24,14 @@ const RecentActivities = () => {
                   {item.description}
                 </p>
               </div>
-              <div className="text-sm text-gray-500">Hace {calculatehHoursSinceCreation(item.createdAt)} horas</div>
+              <div className="text-sm text-gray-500">
+                {calculatehHoursSinceCreation(item.createdAt) < 1 ? 
+                  <span className="text-gray-500">Ahora</span> : 
+                  calculatehHoursSinceCreation(item.createdAt) > 24 ?
+                  <span className="text-gray-500">Hace más de 24 horas</span> :
+                  <span className="text-gray-500">Hace {calculatehHoursSinceCreation(item.createdAt)} horas</span>
+                }
+                </div>
             </div>
           ))}
         </div>

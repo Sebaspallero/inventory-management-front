@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
+
 
 const loginSchema = z.object({
   email: z.string().email('Correo electrónico inválido'),
@@ -20,7 +22,6 @@ type FormData = z.infer<typeof loginSchema>;
 const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const {
@@ -47,8 +48,8 @@ const Login = () => {
 
       navigate("/dashboard");
     } catch (error: any) {
-      console.error("Login failed", error);
-      setErrorMessage("Credenciales inválidas o error del servidor.");
+      const message = error?.response?.data?.message || error?.message || 'Error al iniciar sesión';
+      toast.error(message);
     }
   };
 
@@ -105,11 +106,6 @@ const Login = () => {
             <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
         </div>
-
-        {errorMessage && (
-          <p className="text-red-500 text-sm text-center">{errorMessage}</p>
-        )}
-
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Ingresando..." : "Iniciar Sesión"}
           {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}

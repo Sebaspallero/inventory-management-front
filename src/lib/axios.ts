@@ -20,7 +20,9 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   response => response,
   error => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && error.config.url === '/auth/login') {
+      return Promise.reject(error);
+    } else if (error.response?.status === 401) {
       console.warn("Token expirado, cerrando sesión automáticamente");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("username");

@@ -23,8 +23,9 @@ import { IOrderRequest } from "@/types/IOrder";
 import { IProductResponse } from "@/types/IProduct";
 import { ISupplierResponse } from "@/types/ISupplier";
 import { Package, Plus, ShoppingCartIcon, Trash2 } from "lucide-react";
-import { Separator } from "@radix-ui/react-select";
 import { Badge } from "@/components/ui/badge";
+
+import {toast} from "sonner";
 
 
 const orderSchema = z.object({
@@ -111,11 +112,12 @@ const OrderForm = ({ onSuccess }: Props) => {
         saveOrder.mutate(payload, {
             onSuccess: () => {
                 form.reset();
-                alert("Orden creada exitosamente");
+                toast.success("Orden creada exitosamente");
                 onSuccess();
             },
             onError: (error) => {
-                console.error("Error al crear la orden:", error);
+                const message = error?.message || 'Error al crear la orden';
+                toast.error(message);
             },
         });
     };

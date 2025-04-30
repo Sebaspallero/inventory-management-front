@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ICategoryResponse } from "@/types/ICategory";
 import { useSaveCategory, useUpdateCategory } from "@/hooks/useCategories";
+import { toast } from "sonner"
 
 const supplierSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
@@ -44,22 +45,24 @@ const CategoryForm = ({ onSuccess, categoryToUpdate }: Props) => {
             updateCategory.mutate({ id: categoryToUpdate.id, category: data }, {
                 onSuccess: () => {
                     form.reset();
-                    alert("Categoria actualizada exitosamente");
+                    toast.success("Categoria actualizada exitosamente");
                     onSuccess();
                 },
                 onError: (error) => {
-                    console.error("Error al actualizar la Categoria:", error);
+                    const message = error?.message || 'Error al actualizar la categoria';
+                    toast.error(message);
                 },
             })
         }else{
             saveCategory.mutate(data, {
                 onSuccess: () => {
                     form.reset();
-                    alert("Categoria guardada exitosamente");
+                    toast.success("Categoria guardada exitosamente");
                     onSuccess();
                 },
                 onError: (error) => {
-                    console.error("Error al guardar la categoria:", error);
+                    const message = error?.message || 'Error al guardar la categoria';
+                    toast.error(message);
                 },
             });
         }
