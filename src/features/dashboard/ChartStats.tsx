@@ -16,8 +16,8 @@ const ChartStats = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Nivel de Inventario</CardTitle>
-                    <CardDescription>Análisis mensual del stock</CardDescription>
+                    <CardTitle>Órdenes por mes</CardTitle>
+                    <CardDescription>Análisis mensual de órdenes</CardDescription>
                 </CardHeader>
                 <CardContent className="h-80 to-blue-300">
                     <ResponsiveContainer width="100%" height="100%">
